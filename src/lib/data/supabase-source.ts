@@ -243,6 +243,8 @@ export const remote = {
         p_notes: i.notes ?? "",
       }),
     ),
+  deleteTransaction: (sb: SupabaseClient, id: string, reason: string) =>
+    must(sb.rpc("delete_transaction", { p_id: id, p_reason: reason })),
   voidTransaction: (sb: SupabaseClient, id: string, reason: string) =>
     must(sb.rpc("void_transaction", { p_id: id, p_reason: reason })),
   verifyTransactions: (sb: SupabaseClient, ids: string[]) => must<number>(sb.rpc("verify_transactions", { p_ids: ids })),
@@ -255,6 +257,14 @@ export const remote = {
         p_reference: p.reference ?? "",
       }),
     ),
+  deleteEvent: (sb: SupabaseClient, id: string, reason: string) => must(sb.rpc("delete_event", { p_id: id, p_reason: reason })),
+  /** Creating a login needs the service-role key, so it runs on the server in /api/accounts. */
+  addAccount: async (i: { fullName: string; email: string; password: string; role: Role }) => {
+    const res = await fetch("/api/accounts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(i) });
+    const body = (await res.json().catch(() => ({}))) as { id?: string; error?: string };
+    if (!res.ok || !body.id) throw new Error(body.error ?? "Could not create the account.");
+    return body.id;
+  },
   setRole: (sb: SupabaseClient, profileId: string, role: Role) =>
     must(sb.rpc("set_user_role", { p_profile_id: profileId, p_role: role })),
   logActivity: (sb: SupabaseClient, action: string, entity: string, summary: string) =>

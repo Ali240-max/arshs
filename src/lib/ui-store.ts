@@ -9,6 +9,9 @@ export type ModalRequest =
   | { kind: "booking"; eventId: string; bookingId?: string }
   | { kind: "vendor"; vendorId?: string }
   | { kind: "void"; txnId: string }
+  | { kind: "delete"; txnId: string }
+  | { kind: "deleteEvent"; eventId: string }
+  | { kind: "account" }
   | { kind: "txn"; txnId: string }
   | { kind: "event"; eventId: string };
 

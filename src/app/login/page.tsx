@@ -15,9 +15,9 @@ import { LogoMark } from "@/components/layout/logo";
 import { ThemeToggle } from "@/components/theme";
 import { errorMessage } from "@/components/forms/shared";
 
-const DEMO: { role: Role; email: string; name: string; icon: typeof Crown; can: string }[] = [
-  { role: "finance_secretary", email: "finance@arshs.demo", name: "Ali Farooqi", icon: Landmark, can: "Controls everything: money, events, vendors, slips" },
-  { role: "president", email: "president@arshs.demo", name: "Ayesha Malik", icon: Crown, can: "Sees everything, cannot change anything" },
+const DEMO: { role: Role; email: string; name: string; title: string; icon: typeof Crown; can: string }[] = [
+  { role: "finance_secretary", email: "finance@arshs.demo", name: "Ali Farooqi", title: "Finance Secretary", icon: Landmark, can: "Controls everything: money, events, vendors, slips" },
+  { role: "president", email: "president@arshs.demo", name: "Ayesha Malik", title: "President", icon: Crown, can: "Sees everything, cannot change anything" },
 ];
 
 function equation(b: ReturnType<typeof balanceSummary> | null) {
@@ -207,7 +207,7 @@ export default function LoginPage() {
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className="flex items-center gap-2 text-sm font-semibold">
-                        {ROLE_LABEL[d.role]} <span className="font-normal text-muted">· {d.name}</span>
+                        {d.title} <span className="font-normal text-muted">· {d.name}</span>
                       </span>
                       <span className="block truncate text-[12.5px] text-muted">{d.can}</span>
                     </span>

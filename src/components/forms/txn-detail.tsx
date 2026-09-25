@@ -2,7 +2,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { toast } from "sonner";
-import { Ban, BadgeCheck, CalendarDays, History, Pencil, Printer } from "lucide-react";
+import { Ban, BadgeCheck, Trash2, CalendarDays, History, Pencil, Printer } from "lucide-react";
 import { useApp, useRole } from "@/lib/store";
 import { openReceipts, useLookups } from "@/lib/hooks";
 import { can } from "@/lib/permissions";
@@ -134,6 +134,11 @@ export function TxnDetail({ txnId, onDone }: { txnId: string; onDone: () => void
               <Ban className="h-3.5 w-3.5" /> Void
             </Button>
           </>
+        )}
+        {can(role, "finance.write") && (
+          <Button size="sm" variant="ghost" className="text-coral hover:text-coral" onClick={() => openModal({ kind: "delete", txnId: t.id })}>
+            <Trash2 className="h-3.5 w-3.5" /> Delete
+          </Button>
         )}
         {can(role, "transactions.verify") && !isVoid && !t.verifiedAt && (
           <Button size="sm" onClick={verify}>

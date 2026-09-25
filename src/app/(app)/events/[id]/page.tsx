@@ -9,6 +9,7 @@ import {
   ArrowLeft,
   ArrowUpRight,
   CalendarDays,
+  FileText,
   HandHeart,
   HeartHandshake,
   MapPin,
@@ -141,7 +142,13 @@ function OfficerEvent({ id }: { id: string }) {
   async function setStatus(status: EventStatus) {
     try {
       await useApp.getState().updateEvent(id, { status });
-      toast.success(`Marked as ${EVENT_STATUS_LABEL[status].toLowerCase()}`);
+      if (status === "completed")
+        toast.success("Event completed", {
+          description: "The event report with every vendor and the grand total is ready.",
+          action: { label: "Open report", onClick: () => window.open(`/print/event-report?id=${id}`, "_blank") },
+          duration: 10000,
+        });
+      else toast.success(`Marked as ${EVENT_STATUS_LABEL[status].toLowerCase()}`);
     } catch (err) {
       toast.error(errorMessage(err));
     }
@@ -162,8 +169,15 @@ function OfficerEvent({ id }: { id: string }) {
       </Button>
     );
 
+  const reportBtn = (
+    <Button variant={e.status === "completed" ? "marigold" : "secondary"} onClick={() => window.open(`/print/event-report?id=${id}`, "_blank")}>
+      <FileText className="h-4 w-4" /> Event report
+    </Button>
+  );
+
   const actions = write ? (
     <>
+      {reportBtn}
       <select
         aria-label="Event status"
         value={e.status}
@@ -179,9 +193,14 @@ function OfficerEvent({ id }: { id: string }) {
       <Button variant="secondary" onClick={() => open({ kind: "event", eventId: id })}>
         <Pencil className="h-4 w-4" /> Edit
       </Button>
-      {primary}
+      <Button variant="ghost" className="text-coral hover:text-coral" onClick={() => open({ kind: "deleteEvent", eventId: id })} title="Delete event">
+        <Trash2 className="h-4 w-4" /> Delete
+      </Button>
+      {e.status !== "completed" && primary}
     </>
-  ) : undefined;
+  ) : (
+    reportBtn
+  );
 
   const target = e.type === "expenditure" ? e.budget : e.targetAmount;
   const progressValue = e.type === "expenditure" ? s.expenses : s.revenue;

@@ -30,8 +30,19 @@ export interface NavGroup {
 export const NAV: NavGroup[] = [
   { label: "Overview", items: [{ href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, hint: "Balance, charts and what needs attention" }] },
   {
-    label: "Events",
-    items: [{ href: "/events", label: "Events", icon: CalendarRange, hint: "Fundraisers, drives and campaigns" }],
+    label: "Money",
+    items: [
+      { href: "/transactions", label: "Transactions", icon: ArrowLeftRight, hint: "Every rupee in and out, with search and filters" },
+      { href: "/reports", label: "Reports", icon: BarChart3, hint: "Monthly, event, donation, aid and vendor reports" },
+    ],
+  },
+  { label: "Events", items: [{ href: "/events", label: "Events", icon: CalendarRange, hint: "Fundraisers, drives and campaigns" }] },
+  {
+    label: "System",
+    items: [
+      { href: "/users", label: "Accounts", icon: Users, hint: "Create Finance and view-only logins" },
+      { href: "/settings", label: "Settings", icon: Settings, hint: "Starting balance, society details, theme" },
+    ],
   },
 ];
 

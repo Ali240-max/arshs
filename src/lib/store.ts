@@ -52,6 +52,7 @@ interface AppState {
   recordDistribution: (i: M.DistributionInput) => Promise<{ referenceNo: string }>;
   recordVendorPayment: (i: M.VendorPaymentInput) => Promise<{ paymentId: string; receiptNo: string }>;
   voidTransaction: (id: string, reason: string) => Promise<void>;
+  deleteTransaction: (id: string, reason: string) => Promise<void>;
   verifyTransactions: (ids: string[]) => Promise<number>;
   updateTransactionNotes: (id: string, p: { description: string; counterparty?: string; reference?: string }) => Promise<void>;
 
@@ -64,7 +65,8 @@ interface AppState {
   removeBooking: (id: string) => Promise<void>;
 
   setRole: (profileId: string, role: Role) => Promise<void>;
-  addMember: (i: { fullName: string; email: string }) => Promise<void>;
+  addAccount: (i: M.AccountInput) => Promise<string>;
+  deleteEvent: (id: string, reason: string) => Promise<void>;
   updateSettings: (p: Partial<SocietySettings>) => Promise<void>;
   logActivity: (action: AuditLog["action"], entity: string, summary: string) => void;
 }
@@ -206,6 +208,8 @@ export const useApp = create<AppState>()(
             },
           ),
 
+        deleteTransaction: (id, reason) =>
+          mutate((d, a) => M.deleteTransaction(d, a, id, reason), async () => void (await remote.deleteTransaction(sb(), id, reason))),
         voidTransaction: (id, reason) =>
           mutate((d, a) => M.voidTransaction(d, a, id, reason), async () => void (await remote.voidTransaction(sb(), id, reason))),
 
@@ -231,13 +235,8 @@ export const useApp = create<AppState>()(
         removeBooking: (id) => mutate((d, a) => M.removeBooking(d, a, id), async () => void (await remote.removeBooking(sb(), id))),
 
         setRole: (profileId, role) => mutate((d, a) => M.setRole(d, a, profileId, role), async () => void (await remote.setRole(sb(), profileId, role))),
-        addMember: (i) =>
-          mutate(
-            (d, a) => M.addMember(d, a, i),
-            async () => {
-              throw new Error("Invite new users from Supabase: Authentication > Users > Invite user. They join as members.");
-            },
-          ),
+        addAccount: (i) => mutate((d, a) => M.addAccount(d, a, i), () => remote.addAccount(i)),
+        deleteEvent: (id, reason) => mutate((d, a) => M.deleteEvent(d, a, id, reason), async () => void (await remote.deleteEvent(sb(), id, reason))),
         updateSettings: (p) => mutate((d, a) => M.updateSettings(d, a, p), async () => void (await remote.updateSettings(sb(), p))),
 
         logActivity(action, entity, summary) {

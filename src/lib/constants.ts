@@ -1,9 +1,9 @@
 import type { EventStatus, EventType, PaymentMethod, RecipientType, Role, TxnKind } from "./types";
 
 export const ROLE_LABEL: Record<Role, string> = {
-  finance_secretary: "Finance Secretary",
-  president: "President",
-  member: "Member",
+  finance_secretary: "Finance · full access",
+  president: "View only",
+  member: "No access",
 };
 
 export const EVENT_TYPE_META: Record<EventType, { label: string; short: string; description: string }> = {

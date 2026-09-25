@@ -3,7 +3,7 @@
  * supabase/migrations/0003_functions.sql so behaviour is identical after migration:
  * same numbering, same audit entries, same rules (no deletes of money, void instead).
  */
-import { KIND_META } from "../constants";
+import { KIND_META, ROLE_LABEL } from "../constants";
 import type {
   AuditLog,
   EventType,
@@ -265,6 +265,29 @@ export function recordVendorPayment(data: Snapshot, actor: Profile, i: VendorPay
   };
 }
 
+/** Permanent delete. The linked donation/aid/vendor-payment row goes too; the audit log keeps a copy. */
+export function deleteTransaction(data: Snapshot, actor: Profile, id: string, reason: string): Result {
+  assertFinance(actor);
+  const t = data.transactions.find((x) => x.id === id);
+  if (!t) throw new Error("Transaction not found.");
+  if (reason.trim().length < 3) throw new Error("Give a short reason for deleting.");
+  const detail =
+    data.donations.find((x) => x.transactionId === id) ?? data.distributions.find((x) => x.transactionId === id) ?? data.vendorPayments.find((x) => x.transactionId === id);
+  return {
+    value: undefined,
+    data: {
+      ...data,
+      transactions: data.transactions.filter((x) => x.id !== id),
+      donations: data.donations.filter((x) => x.transactionId !== id),
+      distributions: data.distributions.filter((x) => x.transactionId !== id),
+      vendorPayments: data.vendorPayments.filter((x) => x.transactionId !== id),
+      auditLogs: audit(data, actor, "delete", "transaction", `Deleted ${t.code} (${formatPKR(t.amount)}, ${t.description}): ${reason.trim()}`, id, {
+        deleted: { from: { ...t, detail }, to: null },
+      }),
+    },
+  };
+}
+
 export function voidTransaction(data: Snapshot, actor: Profile, id: string, reason: string): Result {
   assertFinance(actor);
   const t = data.transactions.find((x) => x.id === id);
@@ -444,34 +467,77 @@ export function removeBooking(data: Snapshot, actor: Profile, id: string): Resul
 // ---------------- people & settings ----------------
 export function setRole(data: Snapshot, actor: Profile, profileId: string, role: Role): Result {
   assertFinance(actor);
-  if (profileId === actor.id) throw new Error("You cannot change your own role.");
-  const p = data.profiles.find((x) => x.id === profileId)!;
-  // There is always exactly one Finance Secretary: appointing a new one demotes the old one to member.
-  const profiles = data.profiles.map((x) => {
-    if (x.id === profileId) return { ...x, role };
-    if (role === "finance_secretary" && x.role === "finance_secretary") return { ...x, role: "member" as Role };
-    return x;
-  });
+  if (profileId === actor.id) throw new Error("You cannot change your own access.");
+  const p = data.profiles.find((x) => x.id === profileId);
+  if (!p) throw new Error("Account not found.");
+  if (p.role === "finance_secretary" && role !== "finance_secretary" && data.profiles.filter((x) => x.role === "finance_secretary").length <= 1)
+    throw new Error("At least one Finance account must remain.");
   return {
     value: undefined,
     data: {
       ...data,
-      profiles,
-      auditLogs: audit(data, actor, "role_change", "profile", `Changed ${p.fullName}'s role to ${role.replace("_", " ")}`, profileId, { role: { from: p.role, to: role } }),
+      profiles: data.profiles.map((x) => (x.id === profileId ? { ...x, role } : x)),
+      auditLogs: audit(data, actor, "role_change", "profile", `Changed ${p.fullName}'s access to ${ROLE_LABEL[role]}`, profileId, { role: { from: p.role, to: role } }),
     },
   };
 }
 
-export function addMember(data: Snapshot, actor: Profile, i: { fullName: string; email: string }): Result {
-  assertRole(actor, ["president", "finance_secretary"]);
-  if (data.profiles.some((p) => p.email.toLowerCase() === i.email.toLowerCase())) throw new Error("A user with this email already exists.");
+export interface AccountInput {
+  fullName: string;
+  email: string;
+  password: string;
+  role: "finance_secretary" | "president";
+}
+
+/** Demo version of creating a login. In live mode the /api/accounts route creates the Supabase user. */
+export function addAccount(data: Snapshot, actor: Profile, i: AccountInput): Result<string> {
+  assertFinance(actor);
+  if (data.profiles.some((p) => p.email.toLowerCase() === i.email.trim().toLowerCase())) throw new Error("An account with this email already exists.");
   const id = uid();
+  return {
+    value: id,
+    data: {
+      ...data,
+      profiles: [...data.profiles, { id, fullName: i.fullName.trim(), email: i.email.trim().toLowerCase(), role: i.role, joinedAt: now().slice(0, 10) }],
+      auditLogs: audit(data, actor, "create", "profile", `Created ${ROLE_LABEL[i.role]} account for ${i.fullName.trim()}`, id),
+    },
+  };
+}
+
+/** Deletes an event with its bookings, team and every transaction recorded against it. */
+export function deleteEvent(data: Snapshot, actor: Profile, id: string, reason: string): Result {
+  assertFinance(actor);
+  const e = data.events.find((x) => x.id === id);
+  if (!e) throw new Error("Event not found.");
+  if (reason.trim().length < 3) throw new Error("Give a short reason for deleting.");
+  const bookings = new Set(data.eventVendors.filter((b) => b.eventId === id).map((b) => b.id));
+  const txnIds = new Set([
+    ...data.transactions.filter((t) => t.eventId === id).map((t) => t.id),
+    ...data.vendorPayments.filter((p) => bookings.has(p.eventVendorId)).map((p) => p.transactionId),
+  ]);
+  const gone = data.transactions.filter((t) => txnIds.has(t.id) && t.status === "posted");
+  const tin = gone.filter((t) => t.direction === "in").reduce((a, t) => a + t.amount, 0);
+  const tout = gone.filter((t) => t.direction === "out").reduce((a, t) => a + t.amount, 0);
   return {
     value: undefined,
     data: {
       ...data,
-      profiles: [...data.profiles, { id, fullName: i.fullName.trim(), email: i.email.trim(), role: "member", joinedAt: now().slice(0, 10) }],
-      auditLogs: audit(data, actor, "create", "profile", `Added member ${i.fullName.trim()}`, id),
+      events: data.events.filter((x) => x.id !== id),
+      eventVendors: data.eventVendors.filter((b) => !bookings.has(b.id)),
+      eventMembers: data.eventMembers.filter((m) => m.eventId !== id),
+      transactions: data.transactions.filter((t) => !txnIds.has(t.id)),
+      donations: data.donations.filter((d) => !txnIds.has(d.transactionId)),
+      distributions: data.distributions.filter((d) => !txnIds.has(d.transactionId)),
+      vendorPayments: data.vendorPayments.filter((p) => !txnIds.has(p.transactionId)),
+      auditLogs: audit(
+        data,
+        actor,
+        "delete",
+        "event",
+        `Deleted event ${e.name} with ${bookings.size} stall bookings and ${txnIds.size} transactions (in ${formatPKR(tin)}, out ${formatPKR(tout)}): ${reason.trim()}`,
+        id,
+        { deleted: { from: e, to: null } },
+      ),
     },
   };
 }

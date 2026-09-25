@@ -1,5 +1,5 @@
 "use client";
-import { ArrowDownLeft, ArrowUpRight, Ban, HandHeart, HeartHandshake, ReceiptText, Store, CalendarCog, FileText } from "lucide-react";
+import { ArrowDownLeft, ArrowUpRight, Ban, HandHeart, HeartHandshake, ReceiptText, Store, CalendarCog, FileText, Trash2, UserPlus } from "lucide-react";
 import { useUI } from "@/lib/ui-store";
 import { useApp } from "@/lib/store";
 import { Modal } from "@/components/ui/modal";
@@ -9,9 +9,11 @@ import { LedgerForm } from "./ledger-form";
 import { VendorPaymentForm } from "./vendor-payment-form";
 import { BookingForm } from "./booking-form";
 import { VendorForm } from "./vendor-form";
-import { VoidForm } from "./void-form";
+import { DeleteForm, VoidForm } from "./void-form";
 import { TxnDetail } from "./txn-detail";
 import { EventForm } from "./event-form";
+import { DeleteEventForm } from "./delete-event-form";
+import { AccountForm } from "./account-form";
 
 /**
  * One place renders every modal. Any page opens a form with useUI().open({...}),
@@ -60,6 +62,15 @@ export function GlobalModals() {
       </Modal>
       <Modal open={m?.kind === "void"} onOpenChange={onOpenChange} title="Void transaction" icon={<Ban className="h-5 w-5" />}>
         {m?.kind === "void" && <VoidForm txnId={m.txnId} onDone={close} />}
+      </Modal>
+      <Modal open={m?.kind === "delete"} onOpenChange={onOpenChange} title="Delete transaction" icon={<Trash2 className="h-5 w-5" />}>
+        {m?.kind === "delete" && <DeleteForm txnId={m.txnId} onDone={close} />}
+      </Modal>
+      <Modal open={m?.kind === "deleteEvent"} onOpenChange={onOpenChange} title="Delete event" icon={<Trash2 className="h-5 w-5" />} size="lg">
+        {m?.kind === "deleteEvent" && <DeleteEventForm eventId={m.eventId} onDone={close} />}
+      </Modal>
+      <Modal open={m?.kind === "account"} onOpenChange={onOpenChange} title="New account" description="Create a login and choose what it can do." icon={<UserPlus className="h-5 w-5" />} size="lg">
+        {m?.kind === "account" && <AccountForm onDone={close} />}
       </Modal>
       <Modal open={m?.kind === "txn"} onOpenChange={onOpenChange} title="Transaction" side="right" icon={<FileText className="h-5 w-5" />}>
         {m?.kind === "txn" && <TxnDetail txnId={m.txnId} onDone={close} />}

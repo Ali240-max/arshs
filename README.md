@@ -1,7 +1,7 @@
 # ARSHS Finance (dashboard + events)
 
 Finance and event dashboard for the Adeeb Rizvi Serving Humanity Society.
-This version ships the **Dashboard** and **Events** modules. Other modules (ledger, reports, activity log, users) come next.
+This version ships Dashboard, Transactions, Reports, Events, Accounts and Settings, plus printable receipts and event reports. Other modules (ledger, reports, activity log, users) come next.
 
 ## Run it
 
