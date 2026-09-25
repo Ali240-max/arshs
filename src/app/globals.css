@@ -1,0 +1,193 @@
+@import "tailwindcss";
+@import "@fontsource-variable/bricolage-grotesque";
+@import "@fontsource-variable/instrument-sans";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/*
+  Palette
+  - Rizvi green  #0E6B57  primary, trust, the society's own colour
+  - Marigold     #E9A21B  donations and highlights (garlands, giving)
+  - Inflow       #169B6B  money received
+  - Coral        #E2583E  operating and event expenses
+  - Violet       #7A5AF8  aid given to people (kept separate from expenses on purpose)
+*/
+@theme {
+  --font-display: "Bricolage Grotesque Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Instrument Sans Variable", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand-50: #eaf6f2;
+  --color-brand-100: #cfeae1;
+  --color-brand-200: #a3d6c5;
+  --color-brand-300: #6cbca3;
+  --color-brand-400: #3a9d81;
+  --color-brand-500: #16806a;
+  --color-brand-600: #0e6b57;
+  --color-brand-700: #0b5646;
+  --color-brand-800: #0a4438;
+  --color-brand-900: #08342b;
+  --color-brand-950: #041f1a;
+
+  --color-marigold-50: #fdf6e6;
+  --color-marigold-100: #fbe9bf;
+  --color-marigold-300: #f3c55d;
+  --color-marigold-400: #eeb238;
+  --color-marigold-500: #e9a21b;
+  --color-marigold-600: #c9861a;
+  --color-marigold-700: #9c6512;
+
+  --color-inflow: #169b6b;
+  --color-coral: #e2583e;
+  --color-violet: #7a5af8;
+
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+
+  --radius-card: 1.25rem;
+  --shadow-card: 0 1px 0 rgba(14, 107, 87, 0.04), 0 8px 24px -12px rgba(8, 52, 43, 0.14);
+  --shadow-lift: 0 2px 0 rgba(14, 107, 87, 0.05), 0 20px 40px -16px rgba(8, 52, 43, 0.28);
+
+  --animate-shimmer: shimmer 1.6s linear infinite;
+  @keyframes shimmer {
+    from { background-position: -200% 0; }
+    to { background-position: 200% 0; }
+  }
+}
+
+:root {
+  --bg: #eef3f1;
+  --surface: #ffffff;
+  --surface-2: #f6f9f8;
+  --ink: #0f2621;
+  --ink-2: #2b433d;
+  --muted: #5f726d;
+  --line: #dfe8e5;
+  --line-strong: #c8d6d2;
+  color-scheme: light;
+}
+
+.dark {
+  --bg: #07130f;
+  --surface: #0d1d19;
+  --surface-2: #112622;
+  --ink: #e6f1ee;
+  --ink-2: #c1d3ce;
+  --muted: #8aa39c;
+  --line: #1c332e;
+  --line-strong: #29453f;
+  color-scheme: dark;
+}
+
+html,
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Numbers line up in every table and counter */
+.num {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Soft mesh behind the app, fixed so it doesn't scroll */
+.app-mesh {
+  background:
+    radial-gradient(900px 500px at 8% -10%, rgba(14, 107, 87, 0.1), transparent 60%),
+    radial-gradient(700px 420px at 100% 0%, rgba(233, 162, 27, 0.08), transparent 60%),
+    var(--bg);
+}
+.dark .app-mesh {
+  background:
+    radial-gradient(900px 500px at 8% -10%, rgba(22, 128, 106, 0.18), transparent 60%),
+    radial-gradient(700px 420px at 100% 0%, rgba(233, 162, 27, 0.07), transparent 60%),
+    var(--bg);
+}
+
+/* Glass panel used by the sidebar, top bar and hero */
+.glass {
+  background: color-mix(in oklab, var(--surface) 72%, transparent);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--surface-2) 25%, var(--line) 37%, var(--surface-2) 63%);
+  background-size: 400% 100%;
+  animation: var(--animate-shimmer);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+::selection {
+  background: rgba(233, 162, 27, 0.3);
+}
+
+/* Scrollbars that don't shout */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---------- Print ---------- */
+@media print {
+  @page {
+    margin: 12mm;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-only {
+    display: block !important;
+  }
+  .print-card {
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+    break-inside: avoid;
+    background: #fff !important;
+  }
+  .print-break {
+    break-after: page;
+  }
+}
+.print-only {
+  display: none;
+}
+
+/* Smooth colour change when the theme toggles, without animating every hover */
+.theme-switching,
+.theme-switching * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease !important;
+}

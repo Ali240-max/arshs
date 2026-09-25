@@ -1,0 +1,32 @@
+-- Default money categories. Needed by every form, so they ship with the schema, not the demo seed.
+-- Same ids as the demo seed; the seed skips them if they already exist.
+insert into public.categories (id, name, kind, color) values
+  ('00000002-0000-4000-8000-000000000001', 'Stall fee', 'vendor_payment', '#0E6B57'),
+  ('00000002-0000-4000-8000-000000000002', 'General donation', 'donation', '#E9A21B'),
+  ('00000002-0000-4000-8000-000000000003', 'Zakat', 'donation', '#C9861A'),
+  ('00000002-0000-4000-8000-000000000004', 'Sadaqah', 'donation', '#F2C14E'),
+  ('00000002-0000-4000-8000-000000000005', 'Appeal donation', 'donation', '#D4A017'),
+  ('00000002-0000-4000-8000-000000000006', 'Student stalls', 'income', '#34B38A'),
+  ('00000002-0000-4000-8000-000000000007', 'Direct contributions', 'income', '#5EA8D6'),
+  ('00000002-0000-4000-8000-000000000008', 'Sponsorship', 'income', '#3F7FBF'),
+  ('00000002-0000-4000-8000-000000000009', 'Other income', 'income', '#A3B1AD'),
+  ('00000002-0000-4000-8000-000000000010', 'Venue & tents', 'expense', '#E2583E'),
+  ('00000002-0000-4000-8000-000000000011', 'Sound & lighting', 'expense', '#F08A5D'),
+  ('00000002-0000-4000-8000-000000000012', 'Printing & banners', 'expense', '#F4A259'),
+  ('00000002-0000-4000-8000-000000000013', 'Transportation', 'expense', '#C44536'),
+  ('00000002-0000-4000-8000-000000000014', 'Food & refreshments', 'expense', '#E76F51'),
+  ('00000002-0000-4000-8000-000000000015', 'Packaging', 'expense', '#D98E73'),
+  ('00000002-0000-4000-8000-000000000016', 'Water & drinks', 'expense', '#F2B880'),
+  ('00000002-0000-4000-8000-000000000017', 'Decorations', 'expense', '#B5654A'),
+  ('00000002-0000-4000-8000-000000000018', 'Stationery', 'expense', '#8C5A4A'),
+  ('00000002-0000-4000-8000-000000000019', 'Miscellaneous', 'expense', '#B9A29B'),
+  ('00000002-0000-4000-8000-000000000020', 'Medical', 'distribution', '#7A5AF8'),
+  ('00000002-0000-4000-8000-000000000021', 'Food', 'distribution', '#9B8AFB'),
+  ('00000002-0000-4000-8000-000000000022', 'Education', 'distribution', '#5B3FD9'),
+  ('00000002-0000-4000-8000-000000000023', 'Emergency', 'distribution', '#B692F6'),
+  ('00000002-0000-4000-8000-000000000024', 'Utility bills', 'distribution', '#6E6AB8'),
+  ('00000002-0000-4000-8000-000000000025', 'Financial assistance', 'distribution', '#8E7CC3'),
+  ('00000002-0000-4000-8000-000000000026', 'Ramzan assistance', 'distribution', '#4A2FB8'),
+  ('00000002-0000-4000-8000-000000000027', 'Winter relief', 'distribution', '#A99CF2'),
+  ('00000002-0000-4000-8000-000000000028', 'Other', 'distribution', '#C4B8F5')
+on conflict do nothing;
