@@ -1,7 +1,7 @@
 "use client";
 import { Suspense, useEffect, useMemo, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { Download, Printer } from "lucide-react";
+import { ArrowLeft, Download, Printer } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { useLookups } from "@/lib/hooks";
 import { eventSummary } from "@/lib/finance";
@@ -79,6 +79,9 @@ function EventReport() {
     <div className="min-h-dvh bg-[#eef3f1] py-6 print:bg-white print:py-0">
       <style>{"@page { size: A4; margin: 12mm; }"}</style>
       <div className="no-print mx-auto mb-5 flex max-w-[210mm] flex-wrap items-center gap-2 px-4">
+        <Button variant="ghost" onClick={() => (window.history.length > 1 ? window.history.back() : window.location.assign("/dashboard"))}>
+          <ArrowLeft className="h-4 w-4" /> Back
+        </Button>
         <p className="text-sm font-medium text-[#0f2621]">Event report · {e.name}</p>
         <div className="ml-auto flex gap-2">
           {vendors.length > 0 && (

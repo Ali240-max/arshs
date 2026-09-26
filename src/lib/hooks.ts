@@ -23,7 +23,27 @@ export function useLookups() {
   }, [data]);
 }
 
+/**
+ * Opens a print page in a new tab. If the browser's popup blocker stops the tab
+ * (common on a freshly deployed domain, and after an await such as "Save & print"),
+ * it opens in the same tab instead, so the button never silently does nothing.
+ */
+export function openPage(url: string) {
+  const w = window.open(url, "_blank");
+  if (w) {
+    try {
+      w.opener = null;
+    } catch {
+      /* cross-origin guard, ignore */
+    }
+    return;
+  }
+  window.location.assign(url);
+}
+
 export function openReceipts(type: "vendor" | "donation", ids: string[]) {
   if (!ids.length) return;
-  window.open(`/print/receipts?type=${type}&ids=${ids.join(",")}`, "_blank", "noopener");
+  openPage(`/print/receipts?type=${type}&ids=${ids.join(",")}`);
 }
+
+export const openEventReport = (eventId: string) => openPage(`/print/event-report?id=${eventId}`);

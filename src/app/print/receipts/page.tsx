@@ -1,7 +1,7 @@
 "use client";
 import { Fragment, Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { Printer } from "lucide-react";
+import { ArrowLeft, Printer } from "lucide-react";
 import { useApp } from "@/lib/store";
 import { useLookups } from "@/lib/hooks";
 import { METHOD_LABEL } from "@/lib/constants";
@@ -127,6 +127,9 @@ function Receipts() {
     <div className="min-h-dvh bg-[#eef3f1] py-6 print:bg-white print:py-0">
       <style>{size === "a4" ? "@page { size: A4 portrait; margin: 10mm; }" : "@page { size: 80mm auto; margin: 3mm; }"}</style>
       <div className="no-print mx-auto mb-6 flex max-w-[210mm] flex-wrap items-center gap-3 px-4">
+        <Button variant="ghost" onClick={() => (window.history.length > 1 ? window.history.back() : window.location.assign("/dashboard"))}>
+          <ArrowLeft className="h-4 w-4" /> Back
+        </Button>
         <p className="text-sm font-medium text-[#0f2621]">
           {slips.length} receipt{slips.length > 1 ? "s" : ""}
         </p>

@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { CalendarRange, Download, FileText, HandHeart, HeartHandshake, Printer, Store, TrendingUp } from "lucide-react";
 import { useApp } from "@/lib/store";
-import { useLookups } from "@/lib/hooks";
+import { useLookups, openEventReport } from "@/lib/hooks";
 import { categoryBreakdown, eventSummary, monthlySeries, posted } from "@/lib/finance";
 import { EVENT_STATUS_LABEL, EVENT_TYPE_META, METHOD_LABEL, RECIPIENT_TYPE_LABEL } from "@/lib/constants";
 import { cn, downloadCSV, formatDate, formatPKR, sum } from "@/lib/utils";
@@ -255,7 +255,7 @@ function Events({ from, to }: { from: string; to: string }) {
                 <TD align="right" className={cn("num font-semibold", s.net < 0 ? "text-coral" : "text-inflow")}>{formatPKR(s.net, { sign: true })}</TD>
                 <TD align="right" className="num">{s.outstanding ? n(s.outstanding) : "–"}</TD>
                 <TD align="right">
-                  <Button size="sm" variant="ghost" className="no-print" onClick={() => window.open(`/print/event-report?id=${e.id}`, "_blank")}>
+                  <Button size="sm" variant="ghost" className="no-print" onClick={() => openEventReport(e.id)}>
                     <FileText className="h-3.5 w-3.5" /> Report
                   </Button>
                 </TD>

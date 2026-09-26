@@ -28,7 +28,7 @@ import type { EventStatus, VendorPaymentStatus } from "@/lib/types";
 import { useApp, useMe } from "@/lib/store";
 import { useUI } from "@/lib/ui-store";
 import { can } from "@/lib/permissions";
-import { openReceipts, useLookups } from "@/lib/hooks";
+import { openReceipts, useLookups, openEventReport } from "@/lib/hooks";
 import { eventSummary, posted } from "@/lib/finance";
 import { EVENT_STATUS_LABEL, EVENT_TYPE_META, FLOW_COLORS } from "@/lib/constants";
 import { cn, formatDate, formatPKR, sum } from "@/lib/utils";
@@ -145,7 +145,7 @@ function OfficerEvent({ id }: { id: string }) {
       if (status === "completed")
         toast.success("Event completed", {
           description: "The event report with every vendor and the grand total is ready.",
-          action: { label: "Open report", onClick: () => window.open(`/print/event-report?id=${id}`, "_blank") },
+          action: { label: "Open report", onClick: () => openEventReport(id) },
           duration: 10000,
         });
       else toast.success(`Marked as ${EVENT_STATUS_LABEL[status].toLowerCase()}`);
@@ -170,7 +170,7 @@ function OfficerEvent({ id }: { id: string }) {
     );
 
   const reportBtn = (
-    <Button variant={e.status === "completed" ? "marigold" : "secondary"} onClick={() => window.open(`/print/event-report?id=${id}`, "_blank")}>
+    <Button variant={e.status === "completed" ? "marigold" : "secondary"} onClick={() => openEventReport(id)}>
       <FileText className="h-4 w-4" /> Event report
     </Button>
   );
