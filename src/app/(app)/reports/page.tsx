@@ -31,6 +31,8 @@ export default function ReportsPage() {
 
   return (
     <div className="space-y-6">
+      {/* Reports have wide tables, so they print in landscape */}
+      <style>{"@page { size: A4 landscape; margin: 10mm; }"}</style>
       <PageHeader
         title="Reports"
         description="Summaries you can print or export for meetings and audits."

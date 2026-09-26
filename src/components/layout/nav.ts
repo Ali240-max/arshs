@@ -40,6 +40,7 @@ export const NAV: NavGroup[] = [
   {
     label: "System",
     items: [
+      { href: "/activity", label: "Activity log", icon: Activity, hint: "Who changed what, and when" },
       { href: "/users", label: "Accounts", icon: Users, hint: "Create Finance and view-only logins" },
       { href: "/settings", label: "Settings", icon: Settings, hint: "Starting balance, society details, theme" },
     ],

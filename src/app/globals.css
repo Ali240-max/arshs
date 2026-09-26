@@ -181,6 +181,33 @@ input[type="number"]::-webkit-outer-spin-button {
   .print-break {
     break-after: page;
   }
+  /* App pages (reports, ledger): show whole tables instead of a clipped scroll area */
+  #main {
+    max-width: none !important;
+    padding: 0 !important;
+  }
+  #main .overflow-x-auto,
+  #main .overflow-hidden {
+    overflow: visible !important;
+  }
+  #main table {
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+  #main th,
+  #main td {
+    padding: 4px 6px !important;
+    font-size: 10.5px !important;
+  }
+  #main th {
+    position: static !important;
+  }
+  #main tr {
+    break-inside: avoid;
+  }
+  .app-mesh {
+    background: #fff !important;
+  }
 }
 .print-only {
   display: none;

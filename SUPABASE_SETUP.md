@@ -20,7 +20,7 @@ Supabase renames menu items from time to time. If a label below doesn't match ex
 
 ## 2. Create the database
 
-Open **SQL Editor** in the left menu. Run these six files **in this order**. For each one: open the file from the `supabase/migrations/` folder, copy everything, paste into a new query, click **Run**.
+Open **SQL Editor** in the left menu. Run these seven files **in this order**. For each one: open the file from the `supabase/migrations/` folder, copy everything, paste into a new query, click **Run**.
 
 | Order | File | What it does |
 |---|---|---|
@@ -30,10 +30,11 @@ Open **SQL Editor** in the left menu. Run these six files **in this order**. For
 | 4 | `20260924000004_default_categories.sql` | Donation, expense and aid categories |
 | 5 | `20260925000005_delete_transactions.sql` | Lets Finance delete a transaction (keeps a copy in the audit log) |
 | 6 | `20260926000006_accounts_and_event_delete.sql` | Several Finance / View-only accounts, and deleting events |
+| 7 | `20260927000007_keepalive.sql` | Tiny ping function so a cron job can stop the free plan from pausing |
 
 Each should end with "Success. No rows returned". If one fails, don't run the next. Read the error, fix it, and re-run that file on a fresh project if needed.
 
-If you use the Supabase CLI instead: `supabase link --project-ref <ref>` then `supabase db push` runs all six.
+If you use the Supabase CLI instead: `supabase link --project-ref <ref>` then `supabase db push` runs all seven.
 
 ## 3. Lock down sign-ups
 
@@ -187,7 +188,11 @@ Things to know:
 - Accounts you create while testing are real logins and are not wiped. Set them to **No access** or delete them in Authentication → Users.
 - Running the load twice stops with "Demo data is already loaded". Wipe first.
 
-## 13. Security notes
+## 13. Stop the free plan from pausing
+
+Free Supabase projects pause after about a week with no activity. The `keepalive/` folder has a script and cron setup for a Linux machine that is always on. See `keepalive/README.md`.
+
+## 14. Security notes
 
 - **The anon key is meant to be public.** Anyone can see it in the browser. That is fine, because row-level security decides what each logged-in user can read or write.
 - **Void or delete.** Void keeps a wrong entry visible but stops it counting. Delete removes it completely, including its receipt. Both need a reason, and a delete still leaves a full copy in `audit_logs`.

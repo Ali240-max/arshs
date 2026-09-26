@@ -6,7 +6,6 @@ import { themeScript } from "@/components/theme";
 export const metadata: Metadata = {
   title: { default: "ARSHS Finance", template: "%s · ARSHS Finance" },
   description: "Finance and event management for the Adeeb Rizvi Serving Humanity Society.",
-  icons: { icon: "/icon.svg" },
 };
 
 export const viewport: Viewport = {
